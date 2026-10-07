@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOMENT - Intent-Driven Productivity</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        cream: {
+                            50: '#FBFBF9',
+                            100: '#F4F4F0',
+                            200: '#EFEFEA',
+                            300: '#E5E7EB',
+                        },
+                        sage: {
+                            50: '#F2F7F3',
+                            100: '#E2EFE4',
+                            200: '#C5DFC9',
+                            500: '#4A7C59',
+                            600: '#3E6B48',
+                            700: '#2F5237',
+                            900: '#1A3320',
+                        },
+                        slate: {
+                            800: '#2D3A36',
+                            900: '#1C2826',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom smooth scrollbar & calm animations */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(62, 107, 72, 0.2);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(62, 107, 72, 0.4);
+        }
+
+        .pulsing-dot {
+            animation: pulse-glow 2.5s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 0 0 rgba(74, 124, 89, 0.4); }
+            50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 0 6px rgba(74, 124, 89, 0); }
+        }
+
+        .drag-over {
+            border: 2px dashed #3E6B48 !important;
+            background-color: #EBF2EC !important;
+        }
+
+        /* Circular Timer SVG styling */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-cream-100 text-slate-900 font-sans h-full flex flex-col antialiased selection:bg-sage-200 selection:text-sage-900 overflow-hidden">
+
+    <div id="app" class="flex h-screen w-full overflow-hidden">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="w-64 bg-cream-50 border-r border-cream-300 flex flex-col justify-between p-4 z-20 flex-shrink-0">
+            <div>
+                <!-- MOMENT Logo -->
+                <div class="flex items-center justify-between mb-8 px-2 pt-2">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-3 h-3 rounded-full bg-sage-600 pulsing-dot"></div>
+                        <span class="text-xl font-bold tracking-tight text-slate-900">MOMENT</span>
+                    </div>
+                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-sage-100 text-sage-700">Intent Driven</span>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="space-y-1">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-sage-50 text-sage-700 shadow-sm">
+                        <svg class="w-5 h-5 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span>Intent Engine</span>
+                    </button>
+
+                    <button onclick="switchTab('weekly')" id="nav-weekly" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-cream-200/60 hover:text-slate-900">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span>Today & Weekly</span>
+                    </button>
+
+                    <button onclick="switchTab('focus')" id="nav-focus" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-cream-200/60 hover:text-slate-900">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="flex-1 text-left">Focus Room</span>
+                        <span id="active-session-badge" class="hidden w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                    </button>
+
+                    <button onclick="switchTab('eisenhower')" id="nav-eisenhower" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-cream-200/60 hover:text-slate-900">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        <span>Eisenhower Matrix</span>
+                    </button>
+
+                    <button onclick="switchTab('insights')" id="nav-insights" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-cream-200/60 hover:text-slate-900">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        <span>Insights</span>
+                    </button>
+
+                    <button onclick="switchTab('backlog')" id="nav-backlog" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-cream-200/60 hover:text-slate-900">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span class="flex-1 text-left">Backlog</span>
+                        <span id="backlog-count" class="text-xs bg-cream-300 text-slate-700 px-2 py-0.5 rounded-full font-semibold">0</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="space-y-2 pt-4 border-t border-cream-300">
+                <button onclick="openTaskModal()" class="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-sage-600 hover:bg-sage-700 text-white font-medium rounded-xl shadow-sm transition-all text-sm active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>New Task</span>
+                </button>
+                <button onclick="quickLaunchFocus()" class="w-full flex items-center justify-center space-x-2 py-2 px-3 bg-cream-200 hover:bg-cream-300 text-slate-800 text-xs font-medium rounded-xl transition-all">
+                    <span>⚡ Quick Focus Session</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTAINER AREA -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-cream-50/50">
+
+            <!-- TAB 1: HOME (INTENT ENGINE) -->
+            <section id="tab-home" class="tab-content flex-1 overflow-y-auto p-6 lg:p-10 max-w-5xl mx-auto w-full">
+                <div class="space-y-8">
+                    <!-- Hero Prompt Header -->
+                    <div class="text-center space-y-3 max-w-2xl mx-auto pt-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-sage-100 text-sage-800 border border-sage-200">
+                            ✨ Context-Aware Productivity Engine
+                        </span>
+                        <h1 class="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900">What are you working on right now?</h1>
+                        <p class="text-slate-600 text-sm lg:text-base">Describe your task in 1–2 simple sentences. MOMENT detects your activity and prescribes the ideal flow technique.</p>
+                    </div>
+
+                    <!-- Input Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-cream-300 space-y-4">
+                        <div class="relative">
+                            <textarea id="intent-input" rows="3" oninput="analyzeIntentDebounced()" placeholder="e.g. I need to study 3 chapters for tomorrow's exam, or I have 10 quick admin emails to process..." class="w-full p-4 rounded-xl border border-cream-300 focus:ring-2 focus:ring-sage-500 focus:border-sage-500 text-slate-900 placeholder-slate-400 text-base resize-none outline-none transition-all"></textarea>
+                            <button onclick="clearIntentInput()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 text-xs bg-cream-100 hover:bg-cream-200 px-2 py-1 rounded-md transition-all">Clear</button>
+                        </div>
+
+                        <!-- Sample Prompt Chips -->
+                        <div class="space-y-2">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Try an example:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setSamplePrompt('I need to study 3 chapters for tomorrow\'s exam.')" class="text-xs bg-cream-100 hover:bg-sage-100 text-slate-700 hover:text-sage-800 px-3 py-1.5 rounded-lg border border-cream-300 transition-all text-left">
+                                    📚 Study 3 chapters for exam
+                                </button>
+                                <button onclick="setSamplePrompt('I need to design a poster logo and explore different visual concepts.')" class="text-xs bg-cream-100 hover:bg-sage-100 text-slate-700 hover:text-sage-800 px-3 py-1.5 rounded-lg border border-cream-300 transition-all text-left">
+                                    🎨 Design poster logo & concepts
+                                </button>
+                                <button onclick="setSamplePrompt('I have 10 small emails and admin tasks to clear.')" class="text-xs bg-cream-100 hover:bg-sage-100 text-slate-700 hover:text-sage-800 px-3 py-1.5 rounded-lg border border-cream-300 transition-all text-left">
+                                    🧹 10 small emails & admin tasks
+                                </button>
+                                <button onclick="setSamplePrompt('I have too many things to do and don\'t know where to start.')" class="text-xs bg-cream-100 hover:bg-sage-100 text-slate-700 hover:text-sage-800 px-3 py-1.5 rounded-lg border border-cream-300 transition-all text-left">
+                                    📋 Overwhelmed & don't know where to start
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Micro Context Toggles -->
+                        <div class="pt-3 border-t border-cream-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Time Available</label>
+                                <select id="context-time" onchange="analyzeIntent()" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-lg p-2 text-slate-800 font-medium focus:ring-1 focus:ring-sage-500">
+                                    <option value="auto">⏱️ Auto-detect from text</option>
+                                    <option value="15">15 Minutes</option>
+                                    <option value="25">25 Minutes</option>
+                                    <option value="50">50 Minutes</option>
+                                    <option value="open">Open-ended</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Perceived Difficulty</label>
+                                <select id="context-difficulty" onchange="analyzeIntent()" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-lg p-2 text-slate-800 font-medium focus:ring-1 focus:ring-sage-500">
+                                    <option value="auto">⚡ Auto-detect difficulty</option>
+                                    <option value="low">Low (Easy Flow)</option>
+                                    <option value="medium">Medium (Moderate)</option>
+                                    <option value="high">High (Challenging)</option>
+                                    <option value="overwhelmed">Overwhelmed / Stuck</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Energy Level</label>
+                                <select id="context-energy" onchange="analyzeIntent()" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-lg p-2 text-slate-800 font-medium focus:ring-1 focus:ring-sage-500">
+                                    <option value="medium">🔋 Medium Energy</option>
+                                    <option value="high">⚡ High Energy</option>
+                                    <option value="low">🪫 Low Energy</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendation Results Card -->
+                    <div id="recommendation-card" class="bg-gradient-to-br from-sage-900 to-slate-900 text-white rounded-2xl p-6 lg:p-8 shadow-xl space-y-6 transition-all transform duration-300">
+                        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+                            <div>
+                                <span class="text-xs uppercase tracking-widest text-sage-200 font-semibold">AI Recommendation</span>
+                                <div class="flex items-center space-x-3 mt-1">
+                                    <span id="res-category-badge" class="px-3 py-1 rounded-full bg-sage-700/80 text-sage-100 text-xs font-medium border border-sage-500/30">
+                                        📚 Study
+                                    </span>
+                                    <span class="text-slate-400 text-xs">•</span>
+                                    <span id="res-technique-title" class="text-xl font-bold text-white">
+                                        Active Recall + Pomodoro
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button onclick="launchRecommendedSession()" class="flex items-center space-x-2 bg-sage-500 hover:bg-sage-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-sage-500/20 transition-all transform hover:-translate-y-0.5 active:scale-95 text-sm">
+                                <span>🚀 Start Focus Session</span>
+                            </button>
+                        </div>
+
+                        <!-- Transparent Rationale "WHY" Box -->
+                        <div class="bg-white/5 rounded-xl p-4 border border-white/10 space-y-2">
+                            <div class="flex items-center space-x-2 text-xs font-semibold text-sage-300 uppercase tracking-wider">
+                                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 103.636 5.05l-.707.707a1 1 0 001.414 1.414l.707-.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1a1 1 0 112 0v1a1 1 0 11-2 0zM12 14a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                <span>Why this technique was recommended</span>
+                            </div>
+                            <p id="res-why-text" class="text-sm text-cream-100 leading-relaxed">
+                                High cognitive study material requires active retrieval to lock knowledge into long-term memory. 25-minute structured bursts prevent brain fatigue while maximizing retention.
+                            </p>
+                        </div>
+
+                        <!-- Manual Overrides Row -->
+                        <div class="pt-2 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-300">
+                            <span>Want to tweak the suggestion?</span>
+                            <div class="flex flex-wrap gap-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-slate-400">Category:</span>
+                                    <select id="override-category" onchange="applyManualOverride()" class="bg-white/10 border border-white/20 rounded-lg px-2.5 py-1 text-white text-xs outline-none focus:ring-1 focus:ring-sage-400">
+                                        <option value="Study" class="text-slate-900">📚 Study</option>
+                                        <option value="Work" class="text-slate-900">💼 Work</option>
+                                        <option value="Creative Work" class="text-slate-900">🎨 Creative Work</option>
+                                        <option value="Coding" class="text-slate-900">💻 Coding</option>
+                                        <option value="Cooking" class="text-slate-900">🍳 Cooking</option>
+                                        <option value="Sports/Fitness" class="text-slate-900">🏃 Sports/Fitness</option>
+                                        <option value="Habits" class="text-slate-900">🧘 Habits</option>
+                                        <option value="Hobbies" class="text-slate-900">🎸 Hobbies</option>
+                                        <option value="Chores" class="text-slate-900">🧹 Chores / Errands</option>
+                                        <option value="Routine/Admin" class="text-slate-900">📋 Routine / Admin</option>
+                                        <option value="Planning" class="text-slate-900">🗺️ Planning</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-slate-400">Technique:</span>
+                                    <select id="override-technique" onchange="applyManualOverride()" class="bg-white/10 border border-white/20 rounded-lg px-2.5 py-1 text-white text-xs outline-none focus:ring-1 focus:ring-sage-400">
+                                        <option value="Active Recall + Pomodoro" class="text-slate-900">Active Recall + Pomodoro</option>
+                                        <option value="Flowtime + Deep Work" class="text-slate-900">Flowtime + Deep Work</option>
+                                        <option value="Task Batching" class="text-slate-900">Task Batching</option>
+                                        <option value="Eisenhower Matrix" class="text-slate-900">Eisenhower Matrix</option>
+                                        <option value="Step-by-step Task Breakdown" class="text-slate-900">Step-by-step Task Breakdown</option>
+                                        <option value="Task Chunking (10-Min Sprints)" class="text-slate-900">Task Chunking (10-Min Sprints)</option>
+                                        <option value="Timeboxing" class="text-slate-900">Timeboxing</option>
+                                        <option value="Habit Stacking" class="text-slate-900">Habit Stacking</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TODAY & WEEKLY PLANNER -->
+            <section id="tab-weekly" class="tab-content hidden flex-1 flex flex-col h-full overflow-hidden">
+                <!-- Header Toolbar -->
+                <div class="bg-cream-50 border-b border-cream-300 p-4 flex flex-wrap items-center justify-between gap-4 flex-shrink-0">
+                    <div class="flex items-center space-x-4">
+                        <h2 class="text-lg font-bold text-slate-900" id="weekly-date-range">Oct 5 – Oct 11, 2026</h2>
+                        <div class="flex bg-cream-200 p-1 rounded-xl text-xs font-medium">
+                            <button id="view-week-btn" onclick="toggleWeeklyView('week')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs">Full Week</button>
+                            <button id="view-today-btn" onclick="toggleWeeklyView('today')" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900">Today Only</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <select id="filter-category" onchange="renderWeeklyPlanner()" class="text-xs bg-white border border-cream-300 rounded-lg px-3 py-1.5 text-slate-700 outline-none">
+                            <option value="all">All Categories</option>
+                            <option value="Study">📚 Study</option>
+                            <option value="Work">💼 Work</option>
+                            <option value="Creative Work">🎨 Creative Work</option>
+                            <option value="Coding">💻 Coding</option>
+                            <option value="Cooking">🍳 Cooking</option>
+                            <option value="Routine/Admin">📋 Admin/Routine</option>
+                            <option value="Chores">🧹 Chores</option>
+                        </select>
+
+                        <button onclick="openTaskModal()" class="text-xs bg-sage-600 hover:bg-sage-700 text-white font-medium px-3 py-1.5 rounded-lg transition-all flex items-center space-x-1">
+                            <span>+ Add Task</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Grid & Calendar Timeline Split -->
+                <div class="flex-1 flex overflow-hidden">
+                    <!-- 7-Day Vertical Columns Grid -->
+                    <div id="weekly-grid-container" class="flex-1 overflow-x-auto overflow-y-auto p-4 grid grid-cols-7 gap-3 min-w-[900px]">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Right Side Calendar Timeline Panel -->
+                    <div id="timeline-panel" class="w-72 bg-cream-50 border-l border-cream-300 flex flex-col h-full overflow-hidden flex-shrink-0">
+                        <div class="p-3 border-b border-cream-300 bg-cream-200/50 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Day Timeline</h3>
+                                <p id="timeline-day-label" class="text-xs text-slate-500">Today's Schedule</p>
+                            </div>
+                            <span class="text-xs bg-sage-100 text-sage-800 font-semibold px-2 py-0.5 rounded-full">Time Blocks</span>
+                        </div>
+                        <div id="timeline-slots-container" class="flex-1 overflow-y-auto p-3 space-y-1">
+                            <!-- 8 AM to 10 PM visual hours generated via JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: FOCUS ROOM -->
+            <section id="tab-focus" class="tab-content hidden flex-1 overflow-y-auto p-6 lg:p-10 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+                <div class="w-full bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-cream-300 space-y-8">
+                    
+                    <!-- Top Focus Header -->
+                    <div class="flex flex-wrap items-center justify-between border-b border-cream-200 pb-6 gap-4">
+                        <div>
+                            <span id="focus-technique-badge" class="px-3 py-1 rounded-full bg-sage-100 text-sage-800 text-xs font-semibold">
+                                🎯 Active Recall + Pomodoro
+                            </span>
+                            <h2 id="focus-task-title" class="text-2xl font-bold text-slate-900 mt-2">
+                                Study 3 Chapters for Exam
+                            </h2>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="abandonFocusSession()" class="text-xs font-medium text-slate-500 hover:text-red-600 bg-cream-100 px-3 py-1.5 rounded-lg transition-all">
+                                Cancel Session
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timer Workspace Area -->
+                    <div class="flex flex-col items-center justify-center space-y-6 py-2">
+                        
+                        <!-- Circular Countdown Progress Ring (for Pomodoro / Timebox) -->
+                        <div id="timer-ring-container" class="relative w-64 h-64 flex items-center justify-center">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="text-cream-200" stroke-width="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
+                                <circle id="timer-progress-circle" class="progress-ring__circle text-sage-600" stroke-width="6" stroke-dasharray="263.89" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
+                            </svg>
+                            <div class="absolute flex flex-col items-center justify-center text-center">
+                                <span id="timer-display" class="text-5xl font-extrabold tracking-tight text-slate-900 font-mono">25:00</span>
+                                <span id="timer-phase-label" class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">Focus Interval</span>
+                            </div>
+                        </div>
+
+                        <!-- Timer Controls -->
+                        <div class="flex items-center space-x-4">
+                            <button id="timer-toggle-btn" onclick="toggleTimer()" class="bg-sage-600 hover:bg-sage-700 text-white font-bold px-8 py-3 rounded-2xl shadow-md transition-all transform active:scale-95 text-base flex items-center space-x-2">
+                                <span id="timer-toggle-icon">▶</span>
+                                <span id="timer-toggle-text">Start</span>
+                            </button>
+                            <button onclick="resetTimer()" class="bg-cream-200 hover:bg-cream-300 text-slate-700 p-3 rounded-2xl transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            </button>
+                            <button onclick="completeFocusSession()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold px-5 py-3 rounded-2xl transition-all text-xs border border-emerald-300">
+                                ✓ Mark Done
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FOCUS MUSIC & AUDIO SOUNDSCAPES MODULE -->
+                    <div class="bg-cream-50 rounded-2xl p-5 border border-cream-300 space-y-4">
+                        <div class="flex items-center justify-between border-b border-cream-200 pb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-base">🎧</span>
+                                <h3 class="text-sm font-bold text-slate-900">Focus Music & Audio Atmosphere</h3>
+                            </div>
+                            <!-- Audio Mode Tabs -->
+                            <div class="flex bg-cream-200/80 p-1 rounded-xl text-xs font-medium">
+                                <button id="audio-btn-ambient" onclick="switchAudioTab('ambient')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-semibold transition-all">
+                                    🌸 Silent / Ambient
+                                </button>
+                                <button id="audio-btn-spotify" onclick="switchAudioTab('spotify')" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center space-x-1">
+                                    <svg class="w-3.5 h-3.5 text-emerald-600 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.12-.779-.18-.899-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.78.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.62.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                    <span>Spotify Connect</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- TAB A: BUILT-IN SILENT AMBIENT SOUNDSCAPES -->
+                        <div id="audio-tab-ambient" class="space-y-4">
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Choose a noise-masking frequency or binaural beat soundscape to increase neural clarity without vocal distractions.
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                <button onclick="playSoundscape('pink')" id="sound-btn-pink" class="sound-option-btn text-xs p-3 rounded-xl border border-cream-300 bg-white hover:border-sage-500 font-medium text-slate-800 flex items-center justify-between transition-all">
+                                    <div class="flex items-center space-x-2">
+                                        <span>🌊</span>
+                                        <div class="text-left">
+                                            <div class="font-bold">Pink Noise</div>
+                                            <div class="text-[10px] text-slate-500">Soft Brainwave Masking</div>
+                                        </div>
+                                    </div>
+                                    <span class="status-indicator text-xs">▶</span>
+                                </button>
+
+                                <button onclick="playSoundscape('brown')" id="sound-btn-brown" class="sound-option-btn text-xs p-3 rounded-xl border border-cream-300 bg-white hover:border-sage-500 font-medium text-slate-800 flex items-center justify-between transition-all">
+                                    <div class="flex items-center space-x-2">
+                                        <span>🪵</span>
+                                        <div class="text-left">
+                                            <div class="font-bold">Deep Brown Noise</div>
+                                            <div class="text-[10px] text-slate-500">Heavy Focus Rumble</div>
+                                        </div>
+                                    </div>
+                                    <span class="status-indicator text-xs">▶</span>
+                                </button>
+
+                                <button onclick="playSoundscape('binaural')" id="sound-btn-binaural" class="sound-option-btn text-xs p-3 rounded-xl border border-cream-300 bg-white hover:border-sage-500 font-medium text-slate-800 flex items-center justify-between transition-all">
+                                    <div class="flex items-center space-x-2">
+                                        <span>🧠</span>
+                                        <div class="text-left">
+                                            <div class="font-bold">40Hz Gamma Beats</div>
+                                            <div class="text-[10px] text-slate-500">Binaural Focus Frequency</div>
+                                        </div>
+                                    </div>
+                                    <span class="status-indicator text-xs">▶</span>
+                                </button>
+                            </div>
+
+                            <!-- Audio Sound Controls Bar -->
+                            <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-cream-300 text-xs text-slate-700">
+                                <div class="flex items-center space-x-3">
+                                    <button onclick="stopSoundscape()" id="sound-stop-btn" class="px-2.5 py-1 rounded-lg bg-cream-200 hover:bg-cream-300 font-medium transition-all text-[11px]">
+                                        ⏹ Stop Audio
+                                    </button>
+                                    <span id="sound-playing-label" class="text-slate-500 font-medium">Silent (Audio Off)</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-slate-400">🔈</span>
+                                    <input type="range" min="0" max="1" step="0.05" value="0.3" oninput="setAudioVolume(this.value)" class="w-20 accent-sage-600 h-1.5 bg-cream-200 rounded-lg cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB B: SPOTIFY CONNECT EMBED -->
+                        <div id="audio-tab-spotify" class="hidden space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-semibold text-slate-600">Preset Focus Playlists:</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button onclick="loadSpotifyPlaylist('37i9dQZF1DX4sWSpwq3LiO')" class="text-[11px] bg-white hover:bg-sage-100 border border-cream-300 text-slate-700 px-2.5 py-1 rounded-lg transition-all">
+                                        🎵 Deep Focus
+                                    </button>
+                                    <button onclick="loadSpotifyPlaylist('37i9dQZF1DX8U239m92Anv')" class="text-[11px] bg-white hover:bg-sage-100 border border-cream-300 text-slate-700 px-2.5 py-1 rounded-lg transition-all">
+                                        🎹 Instrumental Study
+                                    </button>
+                                    <button onclick="loadSpotifyPlaylist('37i9dQZF1DXdLEN2aqioXM')" class="text-[11px] bg-white hover:bg-sage-100 border border-cream-300 text-slate-700 px-2.5 py-1 rounded-lg transition-all">
+                                        ☕ Peaceful Retreat
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Spotify Custom Link Bar -->
+                            <div class="flex gap-2">
+                                <input type="text" id="spotify-input" placeholder="Paste Spotify Playlist or Track URL / URI..." class="flex-1 bg-white border border-cream-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 outline-none focus:ring-1 focus:ring-sage-500">
+                                <button onclick="loadCustomSpotify()" class="bg-sage-600 hover:bg-sage-700 text-white text-xs font-medium px-3 py-1.5 rounded-xl transition-all">
+                                    Connect
+                                </button>
+                            </div>
+
+                            <!-- Spotify Embed Iframe Container -->
+                            <div class="w-full overflow-hidden rounded-2xl border border-cream-300 bg-black/5 shadow-inner">
+                                <iframe id="spotify-iframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX4sWSpwq3LiO?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist Section for Chunking / Breakdown Techniques -->
+                    <div id="subtasks-container" class="hidden bg-cream-50 p-4 rounded-xl border border-cream-200 space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+                            <span>Step Checklist</span>
+                            <span id="subtasks-progress">0/3 Completed</span>
+                        </div>
+                        <div id="subtasks-list" class="space-y-2">
+                            <!-- Checklist items dynamically inserted -->
+                        </div>
+                    </div>
+
+                    <!-- Distraction & Interruption Logger -->
+                    <div class="pt-2 border-t border-cream-200">
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                            🧠 Quick Distraction Logger (Dump thoughts here without breaking flow)
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="distraction-input" placeholder="e.g. Check electric bill later..." class="flex-1 bg-cream-50 border border-cream-300 rounded-xl px-4 py-2 text-xs text-slate-900 outline-none focus:ring-1 focus:ring-sage-500">
+                            <button onclick="logDistraction()" class="bg-cream-200 hover:bg-cream-300 text-slate-800 text-xs font-medium px-4 py-2 rounded-xl transition-all">
+                                Log
+                            </button>
+                        </div>
+                        <ul id="distractions-list" class="mt-2 space-y-1 text-xs text-slate-600 pl-2">
+                            <!-- Logged distractions -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: EISENHOWER MATRIX -->
+            <section id="tab-eisenhower" class="tab-content hidden flex-1 overflow-y-auto p-6 lg:p-8">
+                <div class="max-w-6xl mx-auto space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900">Eisenhower Prioritization Matrix</h2>
+                            <p class="text-xs text-slate-600">Categorize tasks by urgency and importance to clear overload and decide what to do next.</p>
+                        </div>
+                        <button onclick="openTaskModal()" class="text-xs bg-sage-600 text-white font-medium px-3 py-2 rounded-xl">
+                            + Add Task to Matrix
+                        </button>
+                    </div>
+
+                    <!-- 2x2 Quadrant Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-full min-h-[550px]">
+                        
+                        <!-- Q1: Urgent & Important (Do First) -->
+                        <div class="bg-rose-50/60 border border-rose-200 rounded-2xl p-4 flex flex-col h-full" ondragover="handleDragOver(event)" ondrop="handleDropQuadrant(event, 'q1')">
+                            <div class="flex items-center justify-between pb-3 border-b border-rose-200 mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                                    <h3 class="text-sm font-bold text-rose-900">1. Urgent & Important</h3>
+                                </div>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-rose-200 text-rose-800">DO FIRST</span>
+                            </div>
+                            <div id="quadrant-q1" class="flex-1 space-y-2 overflow-y-auto min-h-[120px]">
+                                <!-- Cards inserted via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Q2: Not Urgent & Important (Schedule) -->
+                        <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-4 flex flex-col h-full" ondragover="handleDragOver(event)" ondrop="handleDropQuadrant(event, 'q2')">
+                            <div class="flex items-center justify-between pb-3 border-b border-amber-200 mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                                    <h3 class="text-sm font-bold text-amber-900">2. Not Urgent & Important</h3>
+                                </div>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-amber-200 text-amber-800">SCHEDULE</span>
+                            </div>
+                            <div id="quadrant-q2" class="flex-1 space-y-2 overflow-y-auto min-h-[120px]">
+                                <!-- Cards inserted via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Q3: Urgent & Not Important (Delegate) -->
+                        <div class="bg-indigo-50/60 border border-indigo-200 rounded-2xl p-4 flex flex-col h-full" ondragover="handleDragOver(event)" ondrop="handleDropQuadrant(event, 'q3')">
+                            <div class="flex items-center justify-between pb-3 border-b border-indigo-200 mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
+                                    <h3 class="text-sm font-bold text-indigo-900">3. Urgent & Not Important</h3>
+                                </div>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-200 text-indigo-800">DELEGATE / BATCH</span>
+                            </div>
+                            <div id="quadrant-q3" class="flex-1 space-y-2 overflow-y-auto min-h-[120px]">
+                                <!-- Cards inserted via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Q4: Not Urgent & Not Important (Eliminate) -->
+                        <div class="bg-slate-100 border border-slate-200 rounded-2xl p-4 flex flex-col h-full" ondragover="handleDragOver(event)" ondrop="handleDropQuadrant(event, 'q4')">
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+                                    <h3 class="text-sm font-bold text-slate-800">4. Not Urgent & Not Important</h3>
+                                </div>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-700">ELIMINATE</span>
+                            </div>
+                            <div id="quadrant-q4" class="flex-1 space-y-2 overflow-y-auto min-h-[120px]">
+                                <!-- Cards inserted via JS -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: INSIGHTS -->
+            <section id="tab-insights" class="tab-content hidden flex-1 overflow-y-auto p-6 lg:p-8">
+                <div class="max-w-5xl mx-auto space-y-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">Focus & Productivity Insights</h2>
+                        <p class="text-xs text-slate-600">Track your focus momentum, technique effectiveness, and completion stats.</p>
+                    </div>
+
+                    <!-- Metrics Stats Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-cream-300 shadow-xs space-y-1">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Total Focus Today</span>
+                            <div class="text-2xl font-bold text-sage-600" id="stat-focus-today">1h 45m</div>
+                            <span class="text-[11px] text-emerald-600 font-medium">↑ +25% vs yesterday</span>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl border border-cream-300 shadow-xs space-y-1">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Focus Streak</span>
+                            <div class="text-2xl font-bold text-amber-600" id="stat-streak">5 Days 🔥</div>
+                            <span class="text-[11px] text-slate-500 font-medium">Consistent streak</span>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl border border-cream-300 shadow-xs space-y-1">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Completed Sessions</span>
+                            <div class="text-2xl font-bold text-slate-900" id="stat-sessions">12</div>
+                            <span class="text-[11px] text-slate-500 font-medium">Across 4 techniques</span>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl border border-cream-300 shadow-xs space-y-1">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Top Category</span>
+                            <div class="text-2xl font-bold text-indigo-600" id="stat-top-category">📚 Study</div>
+                            <span class="text-[11px] text-slate-500 font-medium">42% of focus time</span>
+                        </div>
+                    </div>
+
+                    <!-- Category Breakdown Progress Bars -->
+                    <div class="bg-white p-6 rounded-2xl border border-cream-300 shadow-xs space-y-4">
+                        <h3 class="text-sm font-bold text-slate-900">Focus Category Breakdown</h3>
+                        <div class="space-y-3" id="insights-category-bars">
+                            <!-- JS calculated progress bars -->
+                        </div>
+                    </div>
+
+                    <!-- Focus History Table -->
+                    <div class="bg-white p-6 rounded-2xl border border-cream-300 shadow-xs space-y-4">
+                        <h3 class="text-sm font-bold text-slate-900">Recent Completed Focus Sessions</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-700">
+                                <thead>
+                                    <tr class="border-b border-cream-200 text-slate-400 font-semibold uppercase">
+                                        <th class="pb-2">Task</th>
+                                        <th class="pb-2">Category</th>
+                                        <th class="pb-2">Technique</th>
+                                        <th class="pb-2">Duration</th>
+                                        <th class="pb-2">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="insights-history-rows" class="divide-y divide-cream-100">
+                                    <!-- Log rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: BACKLOG -->
+            <section id="tab-backlog" class="tab-content hidden flex-1 overflow-y-auto p-6 lg:p-8">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900">Task Backlog Inbox</h2>
+                            <p class="text-xs text-slate-600">Store unscheduled tasks and easily assign them to your weekly calendar.</p>
+                        </div>
+                        <button onclick="openTaskModal()" class="text-xs bg-sage-600 text-white font-medium px-4 py-2 rounded-xl">
+                            + Add Backlog Task
+                        </button>
+                    </div>
+
+                    <div id="backlog-items-container" class="space-y-3">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL 1: NEW / EDIT TASK MODAL -->
+    <div id="task-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-cream-300 space-y-5 transform transition-all">
+            <div class="flex items-center justify-between border-b border-cream-200 pb-3">
+                <h3 id="modal-title" class="text-lg font-bold text-slate-900">Create New Task</h3>
+                <button onclick="closeTaskModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            </div>
+
+            <form id="task-form" onsubmit="saveTask(event)" class="space-y-4">
+                <input type="hidden" id="task-id">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Task Title *</label>
+                    <input type="text" id="form-title" required placeholder="e.g. Read Chapter 4 of Physics" class="w-full text-sm bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-sage-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Category</label>
+                        <select id="form-category" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none">
+                            <option value="Study">📚 Study</option>
+                            <option value="Work">💼 Work</option>
+                            <option value="Creative Work">🎨 Creative Work</option>
+                            <option value="Coding">💻 Coding</option>
+                            <option value="Cooking">🍳 Cooking</option>
+                            <option value="Sports/Fitness">🏃 Sports/Fitness</option>
+                            <option value="Habits">🧘 Habits</option>
+                            <option value="Hobbies">🎸 Hobbies</option>
+                            <option value="Chores">🧹 Chores</option>
+                            <option value="Routine/Admin">📋 Routine/Admin</option>
+                            <option value="Planning">🗺️ Planning</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Priority</label>
+                        <select id="form-priority" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none">
+                            <option value="Urgent">Urgent (Red)</option>
+                            <option value="High">High (Amber)</option>
+                            <option value="Medium" selected>Medium (Blue)</option>
+                            <option value="Low">Low (Sage Green)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Duration (mins)</label>
+                        <input type="number" id="form-duration" value="30" min="5" step="5" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Scheduled Day</label>
+                        <select id="form-day" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none">
+                            <option value="backlog">📦 Backlog (Unscheduled)</option>
+                            <option value="Mon">Monday</option>
+                            <option value="Tue">Tuesday</option>
+                            <option value="Wed">Wednesday</option>
+                            <option value="Thu">Thursday</option>
+                            <option value="Fri">Friday</option>
+                            <option value="Sat">Saturday</option>
+                            <option value="Sun">Sunday</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Time Slot</label>
+                        <select id="form-time" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none">
+                            <option value="">Any Time</option>
+                            <option value="08:00">8:00 AM</option>
+                            <option value="09:00">9:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                            <option value="17:00">5:00 PM</option>
+                            <option value="19:00">7:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Eisenhower Quadrant</label>
+                    <select id="form-quadrant" class="w-full text-xs bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none">
+                        <option value="q1">Q1: Urgent & Important (Do First)</option>
+                        <option value="q2" selected>Q2: Not Urgent & Important (Schedule)</option>
+                        <option value="q3">Q3: Urgent & Not Important (Delegate)</option>
+                        <option value="q4">Q4: Not Urgent & Not Important (Eliminate)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Notes / Substeps</label>
+                    <textarea id="form-notes" rows="2" placeholder="Sub-tasks or details..." class="w-full text-xs bg-cream-50 border border-cream-300 rounded-xl px-3 py-2 outline-none"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-3 border-t border-cream-200">
+                    <button type="button" onclick="closeTaskModal()" class="px-4 py-2 text-xs font-medium text-slate-600 bg-cream-100 hover:bg-cream-200 rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-sage-600 hover:bg-sage-700 rounded-xl shadow-xs">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // Default Sample Data Structure
+        const DEFAULT_TASKS = [
+            { id: '1', title: 'Study 3 chapters for tomorrow physics exam', category: 'Study', priority: 'Urgent', duration: 50, day: 'Wed', time: '09:00', completed: false, quadrant: 'q1', technique: 'Active Recall + Pomodoro', notes: 'Chapter 4, 5 and 6 formula review' },
+            { id: '2', title: 'Design poster logo & explore visual concepts', category: 'Creative Work', priority: 'High', duration: 60, day: 'Wed', time: '14:00', completed: false, quadrant: 'q2', technique: 'Flowtime + Deep Work', notes: 'Sketch 5 thumbnail layouts' },
+            { id: '3', title: 'Clear 10 small admin emails & invoice updates', category: 'Routine/Admin', priority: 'Medium', duration: 25, day: 'Thu', time: '10:00', completed: false, quadrant: 'q3', technique: 'Task Batching', notes: '' },
+            { id: '4', title: 'Cook step-by-step dinner recipe', category: 'Cooking', priority: 'Low', duration: 40, day: 'Fri', time: '19:00', completed: false, quadrant: 'q2', technique: 'Step-by-step Task Breakdown', notes: 'Prep veggies first' },
+            { id: '5', title: 'Leg day gym workout session', category: 'Sports/Fitness', priority: 'Medium', duration: 45, day: 'Mon', time: '08:00', completed: true, quadrant: 'q2', technique: 'Habit Stacking', notes: '' },
+            { id: '6', title: 'Code user authentication feature API', category: 'Coding', priority: 'High', duration: 90, day: 'Tue', time: '11:00', completed: true, quadrant: 'q1', technique: 'Deep Work + Monotasking', notes: '' },
+            { id: '7', title: 'Reorganize chaotic bookshelf & clean desk', category: 'Chores', priority: 'Low', duration: 20, day: 'Sat', time: '15:00', completed: false, quadrant: 'q4', technique: 'Task Chunking (10-Min Sprints)', notes: '' },
+            { id: '8', title: 'Prioritize weekly backlog & strategy deck', category: 'Planning', priority: 'Urgent', duration: 30, day: 'backlog', time: '', completed: false, quadrant: 'q1', technique: 'Eisenhower Matrix', notes: '' }
+        ];
+
+        const DEFAULT_HISTORY = [
+            { id: 'h1', taskTitle: 'Code user authentication feature API', category: 'Coding', technique: 'Deep Work + Monotasking', duration: '90m', date: 'Yesterday' },
+            { id: 'h2', taskTitle: 'Leg day gym workout session', category: 'Sports/Fitness', technique: 'Habit Stacking', duration: '45m', date: 'Oct 5, 2026' }
+        ];
+
+        // State Store
+        let state = {
+            tasks: [],
+            history: [],
+            activeTab: 'home',
+            weeklyView: 'week', // 'week' or 'today'
+            activeFocusTask: null,
+            timer: {
+                running: false,
+                secondsRemaining: 25 * 60,
+                totalSeconds: 25 * 60,
+                intervalId: null,
+                phase: 'Focus', // Focus or Break
+                distractions: []
+            }
+        };
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            switchTab('home');
+            analyzeIntent();
+            renderAllViews();
+            setupDragAndDrop();
+        });
+
+        // Save & Load LocalStorage
+        function loadState() {
+            const savedTasks = localStorage.getItem('moment_tasks');
+            const savedHistory = localStorage.getItem('moment_history');
+            
+            state.tasks = savedTasks ? JSON.parse(savedTasks) : DEFAULT_TASKS;
+            state.history = savedHistory ? JSON.parse(savedHistory) : DEFAULT_HISTORY;
+        }
+
+        function saveState() {
+            localStorage.setItem('moment_tasks', JSON.stringify(state.tasks));
+            localStorage.setItem('moment_history', JSON.stringify(state.history));
+            renderAllViews();
+        }
+
+        // Tab Switching Engine
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-sage-50', 'text-sage-700', 'shadow-xs');
+                el.classList.add('text-slate-600');
+            });
+
+            const activeSection = document.getElementById(`tab-${tabId}`);
+            if (activeSection) activeSection.classList.remove('hidden');
+
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-sage-50', 'text-sage-700', 'shadow-xs');
+                activeNav.classList.remove('text-slate-600');
+            }
+
+            renderAllViews();
+        }
+
+        // --- MOMENT INTENT ENGINE LOGIC ---
+        let debounceTimer;
+        function analyzeIntentDebounced() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(analyzeIntent, 250);
+        }
+
+        function setSamplePrompt(promptText) {
+            document.getElementById('intent-input').value = promptText;
+            analyzeIntent();
+        }
+
+        function clearIntentInput() {
+            document.getElementById('intent-input').value = '';
+            analyzeIntent();
+        }
+
+        function analyzeIntent() {
+            const input = document.getElementById('intent-input').value.trim().toLowerCase();
+            const timeContext = document.getElementById('context-time').value;
+            const diffContext = document.getElementById('context-difficulty').value;
+
+            let category = 'Study';
+            let technique = 'Active Recall + Pomodoro';
+            let why = 'Structured active retrieval maximizes memory retention for learning material before deadlines.';
+
+            // Keyword Intent Detection Rules
+            if (input.includes('too many') || input.includes('don\'t know') || input.includes('start') || input.includes('overwhelmed') || diffContext === 'overwhelmed') {
+                category = 'Planning';
+                technique = 'Eisenhower Matrix';
+                why = 'When overwhelmed with choices, execution stalls. Sorting items into Urgency vs Importance clears paralysis and selects your single next action.';
+            } else if (input.includes('design') || input.includes('poster') || input.includes('concept') || input.includes('art') || input.includes('writing') || input.includes('logo')) {
+                category = 'Creative Work';
+                technique = 'Flowtime + Deep Work';
+                why = 'Creative exploration requires open-ended ideation. Flowtime prevents artificial timers from interrupting deep focus states.';
+            } else if (input.includes('email') || input.includes('admin') || input.includes('small') || input.includes('invoice') || input.includes('messages') || input.includes('10')) {
+                category = 'Routine/Admin';
+                technique = 'Task Batching';
+                why = 'Batching low-cognitive, similar administrative tasks together eliminates context switching and clears high volume rapidly.';
+            } else if (input.includes('code') || input.includes('bug') || input.includes('feature') || input.includes('program') || input.includes('developer')) {
+                category = 'Coding';
+                technique = 'Deep Work + Monotasking';
+                why = 'Complex logical architecture requires uninterrupted deep concentration without multitasking chatter.';
+            } else if (input.includes('cook') || input.includes('recipe') || input.includes('dinner') || input.includes('meal')) {
+                category = 'Cooking';
+                technique = 'Step-by-step Task Breakdown';
+                why = 'Cooking involves precise sequencing and timing. Breaking the recipe into actionable steps keeps execution stress-free.';
+            } else if (input.includes('gym') || input.includes('workout') || input.includes('run') || input.includes('exercise') || input.includes('sports')) {
+                category = 'Sports/Fitness';
+                technique = 'Habit Stacking';
+                why = 'Anchoring your session directly to an existing daily trigger guarantees consistency and high energy output.';
+            } else if (input.includes('clean') || input.includes('room') || input.includes('garage') || input.includes('chores') || input.includes('organize')) {
+                category = 'Chores';
+                technique = 'Task Chunking (10-Min Sprints)';
+                why = 'Physical chores trigger start-up friction. Short 10-minute sprint chunks break inertia with immediate easy wins.';
+            } else if (timeContext === '15' || input.includes('quick') || input.includes('15 min') || input.includes('20 min')) {
+                category = 'Short Time';
+                technique = 'Timeboxing';
+                why = 'A strict short time boundary creates extreme urgency, forcing immediate direct progress on key priorities.';
+            }
+
+            // Update UI elements
+            document.getElementById('res-category-badge').innerText = getCategoryEmoji(category) + ' ' + category;
+            document.getElementById('res-technique-title').innerText = technique;
+            document.getElementById('res-why-text').innerText = why;
+
+            // Sync Override dropdowns
+            document.getElementById('override-category').value = category;
+            document.getElementById('override-technique').value = technique;
+        }
+
+        function applyManualOverride() {
+            const cat = document.getElementById('override-category').value;
+            const tech = document.getElementById('override-technique').value;
+
+            document.getElementById('res-category-badge').innerText = getCategoryEmoji(cat) + ' ' + cat;
+            document.getElementById('res-technique-title').innerText = tech;
+            document.getElementById('res-why-text').innerText = `Manually selected ${tech} for ${cat} tasks to tailor to your preferred workflow state.`;
+        }
+
+        function getCategoryEmoji(cat) {
+            const map = { 'Study':'📚', 'Work':'💼', 'Creative Work':'🎨', 'Coding':'💻', 'Cooking':'🍳', 'Sports/Fitness':'🏃', 'Habits':'🧘', 'Hobbies':'🎸', 'Chores':'🧹', 'Routine/Admin':'📋', 'Planning':'🗺️' };
+            return map[cat] || '🎯';
+        }
+
+        function launchRecommendedSession() {
+            const inputVal = document.getElementById('intent-input').value.trim();
+            const taskTitle = inputVal || 'Custom Focus Session';
+            const category = document.getElementById('override-category').value;
+            const technique = document.getElementById('override-technique').value;
+
+            // Initialize active focus task
+            state.activeFocusTask = {
+                title: taskTitle,
+                category: category,
+                technique: technique,
+                startTime: new Date()
+            };
+
+            // Setup timer duration based on technique
+            let durationMins = 25;
+            if (technique.includes('Flowtime')) durationMins = 45;
+            if (technique.includes('10-Min') || technique.includes('Timeboxing')) durationMins = 15;
+
+            state.timer.secondsRemaining = durationMins * 60;
+            state.timer.totalSeconds = durationMins * 60;
+            state.timer.running = false;
+            clearInterval(state.timer.intervalId);
+
+            // Update Focus Room UI
+            document.getElementById('focus-task-title').innerText = taskTitle;
+            document.getElementById('focus-technique-badge').innerText = '🎯 ' + technique;
+            document.getElementById('active-session-badge').classList.remove('hidden');
+
+            updateTimerDisplay();
+            switchTab('focus');
+        }
+
+        function quickLaunchFocus() {
+            document.getElementById('intent-input').value = 'Quick Focus Session';
+            analyzeIntent();
+            launchRecommendedSession();
+        }
+
+        // --- TIMER ENGINE ---
+        function toggleTimer() {
+            if (state.timer.running) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            state.timer.running = true;
+            document.getElementById('timer-toggle-text').innerText = 'Pause';
+            document.getElementById('timer-toggle-icon').innerText = '⏸';
+
+            state.timer.intervalId = setInterval(() => {
+                if (state.timer.secondsRemaining > 0) {
+                    state.timer.secondsRemaining--;
+                    updateTimerDisplay();
+                } else {
+                    pauseTimer();
+                    playChimeSound();
+                    alert('🎉 Focus Session Interval Complete!');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            state.timer.running = false;
+            clearInterval(state.timer.intervalId);
+            document.getElementById('timer-toggle-text').innerText = 'Resume';
+            document.getElementById('timer-toggle-icon').innerText = '▶';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            state.timer.secondsRemaining = state.timer.totalSeconds;
+            document.getElementById('timer-toggle-text').innerText = 'Start';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(state.timer.secondsRemaining / 60);
+            const secs = state.timer.secondsRemaining % 60;
+            const displayStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = displayStr;
+
+            // Progress Ring SVG update
+            const circle = document.getElementById('timer-progress-circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (state.timer.secondsRemaining / state.timer.totalSeconds) * circumference;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function logDistraction() {
+            const input = document.getElementById('distraction-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            state.timer.distractions.push(text);
+            input.value = '';
+
+            const list = document.getElementById('distractions-list');
+            const li = document.createElement('li');
+            li.innerText = '• ' + text;
+            list.appendChild(li);
+        }
+
+        function completeFocusSession() {
+            if (!state.activeFocusTask) {
+                alert('Session complete!');
+                switchTab('weekly');
+                return;
+            }
+
+            // Log session to history
+            const minsSpent = Math.max(1, Math.round((state.timer.totalSeconds - state.timer.secondsRemaining) / 60));
+            state.history.unshift({
+                id: Date.now().toString(),
+                taskTitle: state.activeFocusTask.title,
+                category: state.activeFocusTask.category,
+                technique: state.activeFocusTask.technique,
+                duration: `${minsSpent}m`,
+                date: 'Just Now'
+            });
+
+            state.activeFocusTask = null;
+            document.getElementById('active-session-badge').classList.add('hidden');
+            saveState();
+
+            playChimeSound();
+            alert('🌟 Great job! Focus session completed & recorded in your Insights.');
+            switchTab('insights');
+        }
+
+        function abandonFocusSession() {
+            if (confirm('Cancel this focus session?')) {
+                pauseTimer();
+                state.activeFocusTask = null;
+                document.getElementById('active-session-badge').classList.add('hidden');
+                switchTab('weekly');
+            }
+        }
+
+        // --- WEB AUDIO API SILENT FOCUS MUSIC & SOUNDSCAPES ---
+        let audioCtx = null;
+        let gainNode = null;
+        let activeNoiseSource = null;
+        let oscLeft = null;
+        let oscRight = null;
+        let currentSound = null;
+
+        function initAudioEngine() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                gainNode = audioCtx.createGain();
+                gainNode.gain.value = 0.3; // Default 30% volume
+                gainNode.connect(audioCtx.destination);
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSoundscape(type) {
+            initAudioEngine();
+            stopSoundscape(false);
+
+            currentSound = type;
+            const sampleRate = audioCtx.sampleRate;
+            const bufferSize = sampleRate * 2; // 2 sec loopable buffer
+            const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            if (type === 'pink') {
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    let white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+                    b6 = white * 0.115926;
+                }
+                activeNoiseSource = audioCtx.createBufferSource();
+                activeNoiseSource.buffer = buffer;
+                activeNoiseSource.loop = true;
+                activeNoiseSource.connect(gainNode);
+                activeNoiseSource.start();
+            } else if (type === 'brown') {
+                let lastOut = 0.0;
+                for (let i = 0; i < bufferSize; i++) {
+                    let white = Math.random() * 2 - 1;
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 2.8;
+                }
+                activeNoiseSource = audioCtx.createBufferSource();
+                activeNoiseSource.buffer = buffer;
+                activeNoiseSource.loop = true;
+                activeNoiseSource.connect(gainNode);
+                activeNoiseSource.start();
+            } else if (type === 'binaural') {
+                // 40Hz Gamma Focus Binaural Beats
+                const merger = audioCtx.createChannelMerger(2);
+                oscLeft = audioCtx.createOscillator();
+                oscRight = audioCtx.createOscillator();
+
+                oscLeft.type = 'sine';
+                oscLeft.frequency.value = 200; // 200Hz Base
+                oscRight.type = 'sine';
+                oscRight.frequency.value = 240; // 240Hz (+40Hz Gamma differential)
+
+                oscLeft.connect(merger, 0, 0);
+                oscRight.connect(merger, 0, 1);
+
+                merger.connect(gainNode);
+                oscLeft.start();
+                oscRight.start();
+            }
+
+            updateAudioUI();
+        }
+
+        function stopSoundscape(updateUI = true) {
+            if (activeNoiseSource) {
+                try { activeNoiseSource.stop(); activeNoiseSource.disconnect(); } catch(e){}
+                activeNoiseSource = null;
+            }
+            if (oscLeft) {
+                try { oscLeft.stop(); oscLeft.disconnect(); } catch(e){}
+                oscLeft = null;
+            }
+            if (oscRight) {
+                try { oscRight.stop(); oscRight.disconnect(); } catch(e){}
+                oscRight = null;
+            }
+            currentSound = null;
+            if (updateUI) updateAudioUI();
+        }
+
+        function setAudioVolume(val) {
+            if (gainNode) {
+                gainNode.gain.value = Number(val);
+            }
+        }
+
+        function updateAudioUI() {
+            const labels = {
+                'pink': '🌊 Playing Pink Noise',
+                'brown': '🪵 Playing Deep Brown Noise',
+                'binaural': '🧠 Playing 40Hz Gamma Beats'
+            };
+
+            document.querySelectorAll('.sound-option-btn').forEach(btn => {
+                btn.classList.remove('border-sage-600', 'bg-sage-50', 'ring-1', 'ring-sage-500');
+            });
+
+            if (currentSound) {
+                const activeBtn = document.getElementById(`sound-btn-${currentSound}`);
+                if (activeBtn) {
+                    activeBtn.classList.add('border-sage-600', 'bg-sage-50', 'ring-1', 'ring-sage-500');
+                }
+                document.getElementById('sound-playing-label').innerText = labels[currentSound] || 'Playing Soundscape';
+                document.getElementById('sound-playing-label').classList.replace('text-slate-500', 'text-sage-700');
+            } else {
+                document.getElementById('sound-playing-label').innerText = 'Silent (Audio Off)';
+                document.getElementById('sound-playing-label').classList.replace('text-sage-700', 'text-slate-500');
+            }
+        }
+
+        function switchAudioTab(tab) {
+            if (tab === 'ambient') {
+                document.getElementById('audio-tab-ambient').classList.remove('hidden');
+                document.getElementById('audio-tab-spotify').classList.add('hidden');
+                document.getElementById('audio-btn-ambient').className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-semibold transition-all';
+                document.getElementById('audio-btn-spotify').className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center space-x-1';
+            } else {
+                document.getElementById('audio-tab-ambient').classList.add('hidden');
+                document.getElementById('audio-tab-spotify').classList.remove('hidden');
+                document.getElementById('audio-btn-spotify').className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-semibold transition-all flex items-center space-x-1';
+                document.getElementById('audio-btn-ambient').className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+            }
+        }
+
+        function loadSpotifyPlaylist(playlistId) {
+            document.getElementById('spotify-iframe').src = `https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`;
+        }
+
+        function loadCustomSpotify() {
+            const val = document.getElementById('spotify-input').value.trim();
+            if (!val) return;
+
+            let embedUrl = val;
+            if (val.includes('open.spotify.com')) {
+                const parts = val.split('open.spotify.com/')[1].split('?')[0];
+                embedUrl = `https://open.spotify.com/embed/${parts}?utm_source=generator&theme=0`;
+            } else if (!val.startsWith('http')) {
+                embedUrl = `https://open.spotify.com/embed/playlist/${val}?utm_source=generator&theme=0`;
+            }
+
+            document.getElementById('spotify-iframe').src = embedUrl;
+        }
+
+        // Web Audio API Focus Chime Synthesizer
+        function playChimeSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.3); // E5
+
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + 1.2);
+            } catch(e) {
+                console.log('Audio playback prevented');
+            }
+        }
+
+        // --- WEEKLY PLANNER VIEW RENDERER ---
+        const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+        function toggleWeeklyView(mode) {
+            state.weeklyView = mode;
+            document.getElementById('view-week-btn').className = mode === 'week' ? 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-semibold' : 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
+            document.getElementById('view-today-btn').className = mode === 'today' ? 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-semibold' : 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
+            renderWeeklyPlanner();
+        }
+
+        function renderWeeklyPlanner() {
+            const gridContainer = document.getElementById('weekly-grid-container');
+            const categoryFilter = document.getElementById('filter-category').value;
+            gridContainer.innerHTML = '';
+
+            const todayCode = 'Wed'; // Standard fixed reference for demo environment
+
+            const visibleDays = state.weeklyView === 'today' ? [todayCode] : DAYS_OF_WEEK;
+            gridContainer.className = state.weeklyView === 'today' 
+                ? 'flex-1 overflow-x-auto overflow-y-auto p-4 grid grid-cols-1 max-w-2xl mx-auto w-full' 
+                : 'flex-1 overflow-x-auto overflow-y-auto p-4 grid grid-cols-7 gap-3 min-w-[950px]';
+
+            visibleDays.forEach(day => {
+                const isToday = day === todayCode;
+                const dayTasks = state.tasks.filter(t => t.day === day && (categoryFilter === 'all' || t.category === categoryFilter));
+                const totalMins = dayTasks.reduce((acc, curr) => acc + Number(curr.duration || 0), 0);
+
+                const col = document.createElement('div');
+                col.className = `bg-white rounded-2xl border ${isToday ? 'border-sage-500 ring-2 ring-sage-500/20' : 'border-cream-300'} flex flex-col p-3 shadow-xs h-full min-h-[500px] transition-all`;
+                col.setAttribute('ondragover', 'handleDragOver(event)');
+                col.setAttribute('ondrop', `handleDropDay(event, '${day}')`);
+
+                col.innerHTML = `
+                    <div class="flex items-center justify-between pb-2 border-b border-cream-200 mb-3">
+                        <div>
+                            <div class="flex items-center space-x-1.5">
+                                <span class="font-bold text-sm text-slate-900">${day}</span>
+                                ${isToday ? '<span class="text-[10px] bg-sage-600 text-white font-semibold px-1.5 py-0.2 rounded-md">TODAY</span>' : ''}
+                            </div>
+                            <span class="text-[11px] text-slate-400 font-medium">${totalMins > 0 ? totalMins + ' mins planned' : 'No tasks'}</span>
+                        </div>
+                        <button onclick="openTaskModal('${day}')" class="text-slate-400 hover:text-sage-600 font-bold text-base bg-cream-100 hover:bg-sage-100 w-6 h-6 rounded-full flex items-center justify-center transition-all">+</button>
+                    </div>
+
+                    <div class="flex-1 space-y-2 overflow-y-auto pr-1">
+                        ${dayTasks.map(t => renderTaskCardHTML(t)).join('')}
+                    </div>
+                `;
+                gridContainer.appendChild(col);
+            });
+
+            renderTimelinePanel();
+        }
+
+        function renderTaskCardHTML(task) {
+            const priorityColors = {
+                'Urgent': 'bg-rose-100 text-rose-800 border-rose-200',
+                'High': 'bg-amber-100 text-amber-800 border-amber-200',
+                'Medium': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                'Low': 'bg-emerald-100 text-emerald-800 border-emerald-200'
+            };
+
+            return `
+                <div draggable="true" ondragstart="handleDragStart(event, '${task.id}')" class="bg-cream-50 hover:bg-cream-100/80 border border-cream-300 rounded-xl p-3 space-y-2 cursor-grab active:cursor-grabbing transition-all shadow-2xs group relative">
+                    <div class="flex items-start justify-between gap-1">
+                        <div class="flex items-start space-x-2">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}')" class="mt-0.5 rounded text-sage-600 focus:ring-sage-500 border-cream-300">
+                            <span class="text-xs font-semibold ${task.completed ? 'line-through text-slate-400' : 'text-slate-800'} leading-snug">${task.title}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-1 pt-1 border-t border-cream-200/60 text-[10px]">
+                        <span class="px-2 py-0.5 rounded-md font-medium border ${priorityColors[task.priority] || 'bg-slate-100 text-slate-700'}">${task.priority}</span>
+                        <div class="flex items-center space-x-1 text-slate-500">
+                            <span>⏱️ ${task.duration}m</span>
+                            ${task.time ? `<span>• ${task.time}</span>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[10px] text-slate-400">
+                        <span>${getCategoryEmoji(task.category)} ${task.category}</span>
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                            <button onclick="editTask('${task.id}')" class="text-slate-500 hover:text-slate-800">✏️</button>
+                            <button onclick="deleteTask('${task.id}')" class="text-slate-500 hover:text-red-600">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTimelinePanel() {
+            const container = document.getElementById('timeline-slots-container');
+            container.innerHTML = '';
+
+            const todayTasks = state.tasks.filter(t => t.day === 'Wed' && t.time);
+
+            for (let hour = 8; hour <= 22; hour++) {
+                const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+                const matchedTask = todayTasks.find(t => t.time === timeStr);
+
+                const slot = document.createElement('div');
+                slot.className = 'flex items-center space-x-2 p-1.5 rounded-lg hover:bg-cream-200/50 transition-all text-xs border-b border-cream-200/40';
+                slot.innerHTML = `
+                    <span class="w-12 text-[10px] font-mono text-slate-400">${hour > 12 ? (hour - 12) + ' PM' : hour + ' AM'}</span>
+                    <div class="flex-1 min-h-[32px] rounded-lg p-1.5 ${matchedTask ? 'bg-sage-100 text-sage-900 border border-sage-300 font-medium' : 'border border-dashed border-cream-300 text-slate-400 hover:text-slate-600'} cursor-pointer" onclick="clickTimelineSlot('${timeStr}')">
+                        ${matchedTask ? `📌 ${matchedTask.title} (${matchedTask.duration}m)` : '+ Click to time-block task'}
+                    </div>
+                `;
+                container.appendChild(slot);
+            }
+        }
+
+        function clickTimelineSlot(timeSlot) {
+            openTaskModal('Wed', timeSlot);
+        }
+
+        // --- EISENHOWER MATRIX VIEW ---
+        function renderEisenhowerMatrix() {
+            ['q1', 'q2', 'q3', 'q4'].forEach(q => {
+                const qContainer = document.getElementById(`quadrant-${q}`);
+                if (!qContainer) return;
+                
+                const qTasks = state.tasks.filter(t => t.quadrant === q);
+                qContainer.innerHTML = qTasks.map(t => `
+                    <div draggable="true" ondragstart="handleDragStart(event, '${t.id}')" class="bg-white p-3 rounded-xl border border-cream-300 shadow-2xs space-y-2">
+                        <div class="flex items-start justify-between">
+                            <span class="text-xs font-bold text-slate-800">${t.title}</span>
+                            <span class="text-[10px] bg-cream-200 px-1.5 py-0.5 rounded text-slate-600">${t.duration}m</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="text-slate-500">${getCategoryEmoji(t.category)} ${t.category}</span>
+                            <button onclick="pushTaskToCalendar('${t.id}')" class="text-sage-700 hover:underline font-semibold">🗓️ Push to Weekly</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function pushTaskToCalendar(taskId) {
+            const task = state.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.day = 'Wed';
+                saveState();
+                alert(`Task "${task.title}" pushed to Wednesday's calendar!`);
+            }
+        }
+
+        // --- BACKLOG VIEW ---
+        function renderBacklog() {
+            const container = document.getElementById('backlog-items-container');
+            const backlogTasks = state.tasks.filter(t => t.day === 'backlog');
+            
+            document.getElementById('backlog-count').innerText = backlogTasks.length;
+
+            if (backlogTasks.length === 0) {
+                container.innerHTML = '<div class="text-center text-xs text-slate-400 py-8">No unscheduled backlog tasks. All caught up!</div>';
+                return;
+            }
+
+            container.innerHTML = backlogTasks.map(t => `
+                <div class="bg-white p-4 rounded-xl border border-cream-300 flex items-center justify-between gap-4 shadow-2xs">
+                    <div class="space-y-1">
+                        <h4 class="text-xs font-bold text-slate-800">${t.title}</h4>
+                        <div class="flex items-center space-x-2 text-[10px] text-slate-500">
+                            <span>${getCategoryEmoji(t.category)} ${t.category}</span>
+                            <span>• ${t.duration} mins</span>
+                            <span>• Priority: ${t.priority}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <select onchange="assignBacklogDay('${t.id}', this.value)" class="text-xs bg-cream-100 border border-cream-300 rounded-lg px-2 py-1 text-slate-700">
+                            <option value="">Schedule Day...</option>
+                            ${DAYS_OF_WEEK.map(d => `<option value="${d}">${d}</option>`).join('')}
+                        </select>
+                        <button onclick="deleteTask('${t.id}')" class="text-xs text-slate-400 hover:text-red-600">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function assignBacklogDay(taskId, dayStr) {
+            if (!dayStr) return;
+            const task = state.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.day = dayStr;
+                saveState();
+            }
+        }
+
+        // --- INSIGHTS VIEW ---
+        function renderInsights() {
+            document.getElementById('stat-sessions').innerText = state.history.length;
+
+            const categoryCounts = {};
+            state.history.forEach(h => {
+                categoryCounts[h.category] = (categoryCounts[h.category] || 0) + 1;
+            });
+
+            const topCat = Object.keys(categoryCounts).reduce((a, b) => categoryCounts[a] > categoryCounts[b] ? a : b, 'Study');
+            document.getElementById('stat-top-category').innerText = getCategoryEmoji(topCat) + ' ' + topCat;
+
+            // Render category bar charts
+            const barsContainer = document.getElementById('insights-category-bars');
+            const total = state.history.length || 1;
+
+            const catColors = { 'Study':'bg-indigo-500', 'Creative Work':'bg-amber-500', 'Coding':'bg-blue-500', 'Cooking':'bg-emerald-500', 'Routine/Admin':'bg-slate-500' };
+
+            barsContainer.innerHTML = Object.keys(categoryCounts).map(cat => {
+                const count = categoryCounts[cat];
+                const pct = Math.round((count / total) * 100);
+                return `
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between font-medium text-slate-700">
+                            <span>${getCategoryEmoji(cat)} ${cat}</span>
+                            <span>${count} sessions (${pct}%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-cream-200 rounded-full overflow-hidden">
+                            <div class="h-full ${catColors[cat] || 'bg-sage-600'}" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // History table
+            const historyRows = document.getElementById('insights-history-rows');
+            historyRows.innerHTML = state.history.map(h => `
+                <tr class="hover:bg-cream-50">
+                    <td class="py-2.5 font-semibold text-slate-800">${h.taskTitle}</td>
+                    <td class="py-2.5">${getCategoryEmoji(h.category)} ${h.category}</td>
+                    <td class="py-2.5 font-mono text-[11px] text-sage-700">${h.technique}</td>
+                    <td class="py-2.5 font-medium">${h.duration}</td>
+                    <td class="py-2.5 text-slate-400">${h.date}</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- TASK CRUD & MODAL HANDLERS ---
+        function openTaskModal(day = 'backlog', timeSlot = '') {
+            document.getElementById('task-id').value = '';
+            document.getElementById('form-title').value = '';
+            document.getElementById('form-day').value = day;
+            document.getElementById('form-time').value = timeSlot;
+            document.getElementById('modal-title').innerText = 'Create New Task';
+            document.getElementById('task-modal').classList.remove('hidden');
+        }
+
+        function closeTaskModal() {
+            document.getElementById('task-modal').classList.add('hidden');
+        }
+
+        function editTask(taskId) {
+            const task = state.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            document.getElementById('task-id').value = task.id;
+            document.getElementById('form-title').value = task.title;
+            document.getElementById('form-category').value = task.category;
+            document.getElementById('form-priority').value = task.priority;
+            document.getElementById('form-duration').value = task.duration;
+            document.getElementById('form-day').value = task.day;
+            document.getElementById('form-time').value = task.time || '';
+            document.getElementById('form-quadrant').value = task.quadrant || 'q2';
+            document.getElementById('form-notes').value = task.notes || '';
+
+            document.getElementById('modal-title').innerText = 'Edit Task';
+            document.getElementById('task-modal').classList.remove('hidden');
+        }
+
+        function saveTask(event) {
+            event.preventDefault();
+            const id = document.getElementById('task-id').value;
+            const title = document.getElementById('form-title').value.trim();
+            const category = document.getElementById('form-category').value;
+            const priority = document.getElementById('form-priority').value;
+            const duration = Number(document.getElementById('form-duration').value);
+            const day = document.getElementById('form-day').value;
+            const time = document.getElementById('form-time').value;
+            const quadrant = document.getElementById('form-quadrant').value;
+            const notes = document.getElementById('form-notes').value.trim();
+
+            if (id) {
+                // Edit existing
+                const task = state.tasks.find(t => t.id === id);
+                if (task) {
+                    Object.assign(task, { title, category, priority, duration, day, time, quadrant, notes });
+                }
+            } else {
+                // Add new
+                state.tasks.push({
+                    id: Date.now().toString(),
+                    title, category, priority, duration, day, time, quadrant, notes,
+                    completed: false
+                });
+            }
+
+            closeTaskModal();
+            saveState();
+        }
+
+        function toggleTaskComplete(taskId) {
+            const task = state.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                saveState();
+            }
+        }
+
+        function deleteTask(taskId) {
+            if (confirm('Delete this task?')) {
+                state.tasks = state.tasks.filter(t => t.id !== taskId);
+                saveState();
+            }
+        }
+
+        // --- HTML5 DRAG AND DROP SYSTEM ---
+        let draggedTaskId = null;
+
+        function handleDragStart(event, taskId) {
+            draggedTaskId = taskId;
+            event.dataTransfer.setData('text/plain', taskId);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+        }
+
+        function handleDropDay(event, targetDay) {
+            event.preventDefault();
+            if (!draggedTaskId) return;
+
+            const task = state.tasks.find(t => t.id === draggedTaskId);
+            if (task) {
+                task.day = targetDay;
+                saveState();
+            }
+            draggedTaskId = null;
+        }
+
+        function handleDropQuadrant(event, targetQuadrant) {
+            event.preventDefault();
+            if (!draggedTaskId) return;
+
+            const task = state.tasks.find(t => t.id === draggedTaskId);
+            if (task) {
+                task.quadrant = targetQuadrant;
+                saveState();
+            }
+            draggedTaskId = null;
+        }
+
+        function setupDragAndDrop() {
+            // Drag listeners initialized inline for smooth performance
+        }
+
+        // --- GLOBAL RENDER SYNC ---
+        function renderAllViews() {
+            renderWeeklyPlanner();
+            renderEisenhowerMatrix();
+            renderBacklog();
+            renderInsights();
+        }
+    </script>
+</body>
+</html>
